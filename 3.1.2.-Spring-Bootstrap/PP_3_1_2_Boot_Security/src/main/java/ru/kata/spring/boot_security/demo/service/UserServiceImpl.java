@@ -10,6 +10,7 @@ import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -45,7 +46,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUser(Long id, User updatedUser) {
-        if (updatedUser.getPassword().isEmpty()) {
+        if (updatedUser.getPassword().isEmpty() || Objects.isNull(updatedUser.getPassword())) {
             Optional<User> user = userRepository.findById(id);
             updatedUser.setPassword(user.get().getPassword());
         } else {

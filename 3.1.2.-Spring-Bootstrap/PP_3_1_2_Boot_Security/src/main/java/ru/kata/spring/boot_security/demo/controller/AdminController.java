@@ -22,13 +22,12 @@ public class AdminController {
 
     private final RoleService roleService;
     private final UserServiceImpl userService;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AdminController(RoleService roleService, UserServiceImpl userService, PasswordEncoder passwordEncoder) {
+    public AdminController(RoleService roleService, UserServiceImpl userService) {
         this.roleService = roleService;
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
+
     }
 
     @GetMapping("/users")
@@ -69,14 +68,6 @@ public class AdminController {
             }
             user.setRoles(rolesSet);
         }
-
-        if (user.getPassword().isEmpty() || user.getPassword() == null) {
-            User existingUser = userService.getUserById(user.getId());
-            user.setPassword(existingUser.getPassword());
-        } else {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
-
         userService.updateUser(user.getId(), user);
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:/admin/users");
@@ -100,7 +91,6 @@ public class AdminController {
             rolesSet.add(currentRole);
         }
         user.setRoles(rolesSet);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         userService.addUser(user);
         ModelAndView modelAndView = new ModelAndView();
