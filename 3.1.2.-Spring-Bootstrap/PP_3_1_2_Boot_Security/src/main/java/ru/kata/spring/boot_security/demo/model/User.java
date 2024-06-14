@@ -4,6 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.util.Collection;
 import java.util.Objects;
@@ -18,7 +19,7 @@ public class User implements UserDetails {
     private Long id;
     @NotEmpty
     private String name;
-    @NotEmpty
+    @Email
     private String email;
     @NotEmpty
     @Column(unique = true)
@@ -26,7 +27,7 @@ public class User implements UserDetails {
     @NotEmpty
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -36,11 +37,12 @@ public class User implements UserDetails {
 
     }
 
-    public User(String name, String email, String username, String password) {
+    public User(String name, String email, String username, String password, Set<Role> roles) {
         this.name = name;
         this.email = email;
         this.username = username;
         this.password = password;
+        this.roles = roles;
     }
 
     public void setId(Long id) {
